@@ -1,0 +1,21 @@
+<!doctype html>
+<head>
+    <title>yodns</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"> 
+</head>
+<body>
+    <div class="container">
+        <h1>yodns</h1>
+        <form action="/" method="post" role="form" class="form-inline">
+            <p>Enter in your yo username, domain to check, and desired CNAME.</p>
+                <input type="text" name="username" class="form-control" placeholder="yo username"/>
+                <input type="text" name="domain" class="form-control" placeholder="domain"/>
+                <input type="text" name="cname" class="form-control" placeholder="CNAME"/>
+                <input type="submit" name="submit" class="btn btn-default" value="submit" />
+            {% if submitted %}
+            <h1>submitted yo!</h1>
+            {% endif %}
+
+        </form>
+    </div>
+</body>
