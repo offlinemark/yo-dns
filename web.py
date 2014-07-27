@@ -18,10 +18,12 @@ def home():
         for i, each in enumerate((username, domain, cname)):
             if i == 0:
                 if not is_valid(each, 1):
-                    return render_template('index.html', submit=True, error=True)
+                    return render_template('index.html', submit=True,
+                                           error=True)
             else:
                 if not is_valid(each):
-                    return render_template('index.html', submit=True, error=True)
+                    return render_template('index.html', submit=True,
+                                           error=True)
                 
         conn = sql.connect('yodns.db')
         c = conn.cursor()

@@ -4,11 +4,14 @@ import time
 import requests
 import dns.resolver
 import config as CFG
+import logging as log
 import sqlite3 as sql
+
+log.basicConfig(format='%(asctime)s - %(message)s', level=log.INFO)
 
 def worker():
     while True:
-        print '[+] Beginning loop'
+        log.info('[+] Beginning loop')
         conn = sql.connect('yodns.db')
         c = conn.cursor()
         c.execute('select * from yodns')
@@ -17,14 +20,14 @@ def worker():
             rc = check_cname(domain, cname)
             if rc:
                 if rc == 1:
-                    print '[+] Sending yo to {}'.format(username)
+                    log.info('[+] Sending yo to {}'.format(username))
                     if 'exceeded' in yo(username):
-                        print '[!] {} is rate limited. Not deleting.'.format(username)
+                        log.info('[!] {} is rate limited. Not deleting.'.format(row))
                         continue
-                print '[+] Deleting {} from db'.format(username)
+                log.info('[+] Deleting {} from db'.format(row))
                 delete_row(conn, pk)
         conn.close()
-        print '[+] Sleeping for {} seconds'.format(CFG.DELAY)
+        log.info('[+] Sleeping for {} seconds'.format(CFG.DELAY))
         time.sleep(CFG.DELAY)
 
 def yo(username):
