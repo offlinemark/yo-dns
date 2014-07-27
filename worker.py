@@ -17,15 +17,13 @@ def worker():
         c.execute('select * from yodns')
         for row in c.fetchall():
             pk, username, domain, cname = row
-            rc = check_cname(domain, cname)
-            if rc:
-                if rc == 1:
-                    log.info('[+] Sending yo to {}'.format(username))
-                    if 'exceeded' in yo(username):
-                        log.info('[!] {} is rate limited. Not deleting.'.format(row))
-                        continue
-                log.info('[+] Deleting {} from db'.format(row))
-                delete_row(conn, pk)
+            if check_cname(domain, cname):
+                log.info('[+] Sending yo to {}'.format(username))
+                if 'exceeded' in yo(username):
+                    log.info('[!] {} is rate limited. Not deleting.'.format(row))
+                else:
+                    log.info('[+] Deleting {} from db'.format(row))
+                    delete_row(conn, pk)
         conn.close()
         log.info('[+] Sleeping for {} seconds'.format(CFG.DELAY))
         time.sleep(CFG.DELAY)
@@ -40,16 +38,13 @@ def check_cname(domain, cname):
         Checks whether the given @cname string is contained in any DNS
         query responses for @domain.
 
-        Returns:
-        -1: error, domain did not have a CNAME record
-         1: success
-         0: failure
+        Returns 1 on success, 0 on failure.
     """
 
     try:
         query = dns.resolver.query(domain, 'CNAME')
-    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
-        return -1
+    except:
+        return 0
     answers = query.response.answer
     for ans in answers:
         for each in ans.items:
