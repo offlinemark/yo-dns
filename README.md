@@ -1,3 +1,3 @@
 # yodns
 
-Get get a yo when your dns resolves.
+Get a yoapp notification when your DNS resolves.
