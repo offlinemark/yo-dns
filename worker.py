@@ -11,9 +11,7 @@ def worker():
         print '[+] Beginning loop'
         conn = sql.connect('yodns.db')
         c = conn.cursor()
-
         c.execute('select * from yodns')
-
         for row in c.fetchall():
             pk, username, domain, cname = row
             rc = check_cname(domain, cname)
@@ -25,7 +23,6 @@ def worker():
                         continue
                 print '[+] Deleting {} from db'.format(username)
                 delete_row(conn, pk)
-
         conn.close()
         print '[+] Sleeping for {} seconds'.format(CFG.DELAY)
         time.sleep(CFG.DELAY)
