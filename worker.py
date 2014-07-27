@@ -45,7 +45,7 @@ def check_cname(domain, cname):
 
     try:
         query = dns.resolver.query(domain, 'CNAME')
-    except dns.resolver.NoAnswer:
+    except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
         return -1
     answers = query.response.answer
     for ans in answers:

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import re
 import worker
 import sqlite3 as sql
 import multiprocessing
@@ -14,6 +15,14 @@ def home():
         domain = request.form['domain']
         cname = request.form['cname']
 
+        for i, each in enumerate((username, domain, cname)):
+            if i == 0:
+                if not is_valid(each, 1):
+                    return render_template('index.html', submit=True, error=True)
+            else:
+                if not is_valid(each):
+                    return render_template('index.html', submit=True, error=True)
+                
         conn = sql.connect('yodns.db')
         c = conn.cursor()
         c.execute('insert into yodns (username, domain, cname) values (?,?,?)',
@@ -21,11 +30,19 @@ def home():
         conn.commit()
         conn.close()
 
-        return render_template('index.html', submitted=True)
+        return render_template('index.html', submit=True, error=False)
 
     return render_template('index.html')
+
+def is_valid(str, usr_flag=None):
+    regex = '^\w+$' if usr_flag else '^(\w+\.)?\w+\.\w+\.?$'
+
+    if len(str) > 50:
+        return False
+
+    return re.search(regex, str)
 
 if __name__ == '__main__':
     p = multiprocessing.Process(target=worker.worker)
     p.start()
-    app.run()
+    app.run(debug=True)
