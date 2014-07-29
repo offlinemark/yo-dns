@@ -2,6 +2,7 @@
 
 import re
 import worker
+import logging
 import sqlite3 as sql
 import multiprocessing
 from flask import Flask, render_template, request
@@ -47,4 +48,7 @@ def is_valid(str, usr_flag=None):
 if __name__ == '__main__':
     p = multiprocessing.Process(target=worker.worker)
     p.start()
+    logging.basicConfig(filename='logs/server.log',
+                        format='%(asctime)s - %(levelname)s - %(message)s',
+                        level=logging.DEBUG)
     app.run(debug=True)

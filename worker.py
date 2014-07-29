@@ -1,31 +1,35 @@
 #!/usr/bin/env python
 
 import time
+import logging
 import requests
 import dns.resolver
 import config as CFG
-import logging as log
 import sqlite3 as sql
 
-log.basicConfig(format='%(asctime)s - %(message)s', level=log.INFO)
+log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+handler = logging.FileHandler('logs/app.log')
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+log.addHandler(handler)
 
 def worker():
     while True:
-        log.info('[+] Beginning loop')
         conn = sql.connect('yodns.db')
         c = conn.cursor()
         c.execute('select * from yodns')
         for row in c.fetchall():
             pk, username, domain, cname = row
             if check_cname(domain, cname):
-                log.info('[+] Sending yo to {}'.format(username))
+                log.debug('[+] Sending yo to: {}'.format(username))
                 if 'exceeded' in yo(username):
-                    log.info('[!] {} is rate limited. Not deleting.'.format(row))
+                    log.debug('[!] {} is rate limited. Not deleting.'.format(row))
                 else:
-                    log.info('[+] Deleting {} from db'.format(row))
+                    log.debug('[+] Deleting {} from db'.format(row))
                     delete_row(conn, pk)
         conn.close()
-        log.info('[+] Sleeping for {} seconds'.format(CFG.DELAY))
         time.sleep(CFG.DELAY)
 
 def yo(username):
