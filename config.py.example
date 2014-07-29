@@ -1,2 +1,5 @@
+# yo-dns configuration
+DB     = 'yo-dns.db'
+PORT   = 5000
+DELAY  = 60 * 10 # 10 minutes
 APIKEY = '<api key>'
-DELAY  = 60 * 5 # 5 minutes

@@ -17,7 +17,7 @@ log.addHandler(handler)
 
 def worker():
     while True:
-        conn = sql.connect('yodns.db')
+        conn = sql.connect(CFG.DB)
         c = conn.cursor()
         c.execute('select * from yodns')
         for row in c.fetchall():
