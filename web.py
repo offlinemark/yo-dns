@@ -2,6 +2,8 @@
 
 import re
 import worker
+import logging
+import config as CFG
 import sqlite3 as sql
 import multiprocessing
 from flask import Flask, render_template, request
@@ -25,7 +27,7 @@ def home():
                     return render_template('index.html', submit=True,
                                            error=True)
                 
-        conn = sql.connect('yodns.db')
+        conn = sql.connect(CFG.DB)
         c = conn.cursor()
         c.execute('insert into yodns (username, domain, cname) values (?,?,?)',
                   (username, domain, cname))
@@ -47,4 +49,7 @@ def is_valid(str, usr_flag=None):
 if __name__ == '__main__':
     p = multiprocessing.Process(target=worker.worker)
     p.start()
-    app.run(host='0.0.0.0')
+    logging.basicConfig(filename='logs/server.log',
+                        format='%(asctime)s - %(levelname)s - %(message)s',
+                        level=logging.DEBUG)
+    app.run(host='0.0.0.0', port=CFG.PORT, use_reloader=False)
